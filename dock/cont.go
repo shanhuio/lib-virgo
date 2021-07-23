@@ -101,6 +101,11 @@ func (c *Cont) CopyOut(src, destDir string) error {
 // Start starts the container.
 func (c *Cont) Start() error { return c.c.poke(c.path("start"), nil) }
 
+// SendSIGINT sends SIGINT (Ctrl-C) to the container.
+func (c *Cont) SendSIGINT() error {
+	return c.c.poke(c.path("kill"), singleQuery("signal", "SIGINT"))
+}
+
 // Stop stops the container.
 func (c *Cont) Stop() error {
 	err := c.c.poke(c.path("stop"), singleQuery("t", "60"))
@@ -115,6 +120,9 @@ func (c *Cont) Remove() error { return c.c.del(c.path(""), nil) }
 
 // Drop stops and removes the container.
 func (c *Cont) Drop() error {
+	if err := c.SendSIGINT(); err != nil {
+		return err
+	}
 	if err := c.Stop(); err != nil {
 		return err
 	}
