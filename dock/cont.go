@@ -120,9 +120,6 @@ func (c *Cont) Remove() error { return c.c.del(c.path(""), nil) }
 
 // Drop stops and removes the container.
 func (c *Cont) Drop() error {
-	if err := c.SendSIGINT(); err != nil {
-		return err
-	}
 	if err := c.Stop(); err != nil {
 		return err
 	}
