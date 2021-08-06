@@ -30,9 +30,7 @@ type proxy struct {
 }
 
 func newProxy(d dialer) *proxy {
-	return &proxy{
-		dialer: d,
-	}
+	return &proxy{dialer: d}
 }
 
 var errNameRejected = errors.New("name rejected")
