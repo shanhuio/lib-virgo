@@ -26,23 +26,25 @@ import (
 	"shanhu.io/misc/errcode"
 )
 
-// Home is the home endpoint name.
-const Home = "~"
-
-// Forward means to use DialForward to get a connection.
-const Forward = ">"
+// Dest specifies a destination.
+type Dest struct {
+	Name       string
+	Home       bool // Use DialHome.
+	ForwardTCP string
+}
 
 // ServerConfig contains configuration of an SNI based proxy server.
 type ServerConfig struct {
 	// Lookup looks for the user ID for a particular domain.
-	Lookup func(domain string) (string, error)
+	Lookup func(domain string) (*Dest, error)
 
 	// DialHome provides a dialer for dialing home for endpoint name "~".
 	DialHome func(ctx context.Context) (net.Conn, error)
 
 	// DialForward provides a dialer for dialing a domain for endpoint
-	// name ">".
-	DialForward func(ctx context.Context, domain string) (net.Conn, error)
+	// that is fowarding to a TCP. If this is not provided,
+	// a default network TCP dailing will be used.
+	DialForward func(ctx context.Context, fwd string) (net.Conn, error)
 
 	// SideToken gets a token for side connections.
 	SideToken func(user string) (string, error)
@@ -62,7 +64,7 @@ type Server struct {
 	upgrader *websocket.Upgrader
 	proxy    *proxy
 
-	lookup      func(domain string) (string, error)
+	lookup      func(domain string) (*Dest, error)
 	dialHome    func(ctx context.Context) (net.Conn, error)
 	dialForward func(ctx context.Context, domain string) (net.Conn, error)
 
@@ -121,30 +123,32 @@ func endpointNotFoundError(domain string) error {
 	return errcode.NotFoundf("endpoint for %q not found", domain)
 }
 
+var defaultDialer = &net.Dialer{}
+
 func (s *Server) dial(
 	ctx context.Context, domain, asAddr string,
 ) (net.Conn, error) {
 	if s.lookup == nil {
 		return nil, errcode.Internalf("server not accepting")
 	}
-	name, err := s.lookup(domain)
+	dest, err := s.lookup(domain)
 	if err != nil {
 		return nil, err
 	}
 
-	if name == Home {
+	if dest.Home {
 		if s.dialHome == nil {
 			return nil, endpointNotFoundError(domain)
 		}
 		return s.dialHome(ctx)
-	} else if name == Forward {
+	} else if fwd := dest.ForwardTCP; fwd != "" {
 		if s.dialForward == nil {
-			return nil, endpointNotFoundError(domain)
+			return defaultDialer.DialContext(ctx, "tcp", fwd)
 		}
-		return s.dialForward(ctx, domain)
+		return s.dialForward(ctx, fwd)
 	}
 
-	ep, err := s.endpoint(name)
+	ep, err := s.endpoint(dest.Name)
 	if err != nil {
 		return nil, errcode.Annotatef(err, "endpoint for %q", domain)
 	}
@@ -152,7 +156,7 @@ func (s *Server) dial(
 }
 
 func checkEndpointName(name string) error {
-	if name == Home || name == Forward || name == "" {
+	if name == "" {
 		return errcode.InvalidArgf("invalid endpoint name: %q", name)
 	}
 	return nil

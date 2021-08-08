@@ -146,14 +146,14 @@ func TestServer_proxy(t *testing.T) {
 	defer lis.Close()
 
 	config := &ServerConfig{
-		Lookup: func(domain string) (string, error) {
+		Lookup: func(domain string) (*Dest, error) {
 			if domain == "site1.com" {
-				return "/site1", nil
+				return &Dest{Name: "/site1"}, nil
 			}
 			if domain == "site2.com" {
-				return "/site2", nil
+				return &Dest{Name: "/site2"}, nil
 			}
-			return "", fmt.Errorf("bad domain: %q", domain)
+			return nil, fmt.Errorf("bad domain: %q", domain)
 		},
 	}
 
@@ -261,11 +261,11 @@ func TestServer_kick(t *testing.T) {
 	defer lis.Close()
 
 	config := &ServerConfig{
-		Lookup: func(domain string) (string, error) {
+		Lookup: func(domain string) (*Dest, error) {
 			if domain == "site.com" {
-				return "tester", nil
+				return &Dest{Name: "tester"}, nil
 			}
-			return "", fmt.Errorf("bad domain: %q", domain)
+			return nil, fmt.Errorf("bad domain: %q", domain)
 		},
 	}
 	s := NewServer(config)
