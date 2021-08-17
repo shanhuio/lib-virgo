@@ -21,11 +21,14 @@ import (
 
 	"github.com/gorilla/websocket"
 	"shanhu.io/aries/creds"
+	"shanhu.io/misc/errcode"
+	"shanhu.io/misc/httputil"
 )
 
 // DialOption provides addition option for dialing.
 type DialOption struct {
 	Dialer        *websocket.Dialer
+	TokenSource   httputil.TokenSource
 	Login         *creds.Login
 	GuestToken    string
 	TunnelOptions *Options
@@ -41,10 +44,16 @@ func Dial(
 	}
 
 	var token string
-	if opt.Login != nil {
+	if opt.TokenSource != nil {
+		t, err := opt.TokenSource.Token(ctx)
+		if err != nil {
+			return nil, errcode.Annotate(err, "get token from source")
+		}
+		token = t
+	} else if opt.Login != nil {
 		t, err := opt.Login.Token()
 		if err != nil {
-			return nil, err
+			return nil, errcode.Annotate(err, "login for token")
 		}
 		token = t
 	}
