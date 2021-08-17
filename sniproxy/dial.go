@@ -28,7 +28,6 @@ import (
 type DialOption struct {
 	Dialer        *websocket.Dialer
 	TokenSource   httputil.TokenSource
-	GuestToken    string
 	TunnelOptions *Options
 }
 
@@ -52,7 +51,6 @@ func Dial(
 	dialer := &websocketDialer{
 		url:        addr,
 		token:      token,
-		guestToken: opt.GuestToken,
 		dialer:     opt.Dialer,
 	}
 	tunnOpt := opt.TunnelOptions

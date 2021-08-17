@@ -29,7 +29,6 @@ import (
 type websocketDialer struct {
 	url        *url.URL
 	token      string
-	guestToken string
 	dialer     *websocket.Dialer
 }
 
@@ -57,9 +56,6 @@ func (d *websocketDialer) dial(ctx context.Context, opt *Options) (
 
 	u := *d.url
 	q := u.Query()
-	if d.guestToken != "" {
-		q.Set("token", d.guestToken)
-	}
 	if opt == nil {
 		opt = new(Options)
 	}
