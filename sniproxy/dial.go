@@ -20,7 +20,6 @@ import (
 	"net/url"
 
 	"github.com/gorilla/websocket"
-	"shanhu.io/aries/creds"
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
 )
@@ -29,7 +28,6 @@ import (
 type DialOption struct {
 	Dialer        *websocket.Dialer
 	TokenSource   httputil.TokenSource
-	Login         *creds.Login
 	GuestToken    string
 	TunnelOptions *Options
 }
@@ -50,14 +48,7 @@ func Dial(
 			return nil, errcode.Annotate(err, "get token from source")
 		}
 		token = t
-	} else if opt.Login != nil {
-		t, err := opt.Login.Token()
-		if err != nil {
-			return nil, errcode.Annotate(err, "login for token")
-		}
-		token = t
 	}
-
 	dialer := &websocketDialer{
 		url:        addr,
 		token:      token,
