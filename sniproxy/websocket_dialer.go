@@ -27,9 +27,9 @@ import (
 )
 
 type websocketDialer struct {
-	url        *url.URL
-	token      string
-	dialer     *websocket.Dialer
+	url    *url.URL
+	token  string
+	dialer *websocket.Dialer
 }
 
 func (d *websocketDialer) address() string {

@@ -20,14 +20,12 @@ import (
 	"net/url"
 
 	"github.com/gorilla/websocket"
-	"shanhu.io/misc/errcode"
-	"shanhu.io/misc/httputil"
 )
 
 // DialOption provides addition option for dialing.
 type DialOption struct {
 	Dialer        *websocket.Dialer
-	TokenSource   httputil.TokenSource
+	Token         string
 	TunnelOptions *Options
 }
 
@@ -40,18 +38,10 @@ func Dial(
 		opt = &DialOption{}
 	}
 
-	var token string
-	if opt.TokenSource != nil {
-		t, err := opt.TokenSource.Token(ctx)
-		if err != nil {
-			return nil, errcode.Annotate(err, "get token from source")
-		}
-		token = t
-	}
 	dialer := &websocketDialer{
-		url:        addr,
-		token:      token,
-		dialer:     opt.Dialer,
+		url:    addr,
+		token:  opt.Token,
+		dialer: opt.Dialer,
 	}
 	tunnOpt := opt.TunnelOptions
 	if tunnOpt == nil {
