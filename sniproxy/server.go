@@ -126,12 +126,12 @@ func endpointNotFoundError(domain string) error {
 var defaultDialer = &net.Dialer{}
 
 func (s *Server) dial(
-	ctx context.Context, hello *helloInfo, asAddr string,
+	ctx context.Context, hello *TLSHelloInfo, asAddr string,
 ) (net.Conn, error) {
 	if s.lookup == nil {
 		return nil, errcode.Internalf("server not accepting")
 	}
-	domain := hello.serverName
+	domain := hello.ServerName
 	dest, err := s.lookup(domain)
 	if err != nil {
 		return nil, err

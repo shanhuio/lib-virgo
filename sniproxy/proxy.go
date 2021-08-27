@@ -61,12 +61,12 @@ func isRejectedDomain(name string) bool {
 
 func (p *proxy) hostConn(ctx context.Context, conn net.Conn) error {
 	defer conn.Close()
-	bc := newBufConn(conn)
-	hello, err := bc.helloInfo()
+	bc := NewTLSHelloConn(conn)
+	hello, err := bc.HelloInfo()
 	if err != nil {
 		return err
 	}
-	if isRejectedDomain(hello.serverName) {
+	if isRejectedDomain(hello.ServerName) {
 		return errNameRejected
 	}
 

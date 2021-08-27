@@ -24,32 +24,37 @@ import (
 	"net"
 )
 
-type helloInfo struct {
-	serverName string
-	protoCount int
-	firstProto string
+// TLSHelloInfo contains the brief information about at TLS ClientHello
+// message.
+type TLSHelloInfo struct {
+	ServerName string
+	ProtoCount int
+	FirstProto string
 }
 
-type bufConn struct {
+// TLSHelloConn wraps a connection and peeks the hello info.
+type TLSHelloConn struct {
 	net.Conn
 	br *bufio.Reader
 }
 
-func newBufConn(conn net.Conn) *bufConn {
-	return &bufConn{
+// NewTLSHelloConn wraps conn and reads the TLS ClientHello inforamtion.
+func NewTLSHelloConn(conn net.Conn) *TLSHelloConn {
+	return &TLSHelloConn{
 		Conn: conn,
 		br:   bufio.NewReader(conn),
 	}
 }
 
-func (c *bufConn) Read(buf []byte) (int, error) {
+// Read implements io.Reader
+func (c *TLSHelloConn) Read(buf []byte) (int, error) {
 	return c.br.Read(buf)
 }
 
-// helloInfo returns the SNI information extracted from the TLS ClientHello,
+// HelloInfo returns the SNI information extracted from the TLS ClientHello,
 // without consuming any bytes from br.
 // On any error, the empty string is returned.
-func (c *bufConn) helloInfo() (*helloInfo, error) {
+func (c *TLSHelloConn) HelloInfo() (*TLSHelloInfo, error) {
 	const headerLen = 5
 	hdr, err := c.br.Peek(headerLen)
 	if err != nil {
@@ -66,7 +71,7 @@ func (c *bufConn) helloInfo() (*helloInfo, error) {
 		return nil, err
 	}
 
-	info := new(helloInfo)
+	info := new(TLSHelloInfo)
 	tls.Server(
 		&headerConn{r: bytes.NewReader(helloBytes)},
 		nameSinkTLSConfig(info),
@@ -74,12 +79,12 @@ func (c *bufConn) helloInfo() (*helloInfo, error) {
 	return info, nil
 }
 
-func nameSinkTLSConfig(info *helloInfo) *tls.Config {
+func nameSinkTLSConfig(info *TLSHelloInfo) *tls.Config {
 	getConfig := func(h *tls.ClientHelloInfo) (*tls.Config, error) {
-		info.serverName = h.ServerName
-		info.protoCount = len(h.SupportedProtos)
-		if info.protoCount > 0 {
-			info.firstProto = h.SupportedProtos[0]
+		info.ServerName = h.ServerName
+		info.ProtoCount = len(h.SupportedProtos)
+		if info.ProtoCount > 0 {
+			info.FirstProto = h.SupportedProtos[0]
 		}
 		return nil, nil
 	}
