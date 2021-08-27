@@ -23,6 +23,8 @@ import (
 	"net"
 	"strings"
 	"sync"
+
+	"shanhu.io/misc/netutil"
 )
 
 type proxy struct {
@@ -60,23 +62,23 @@ func isRejectedDomain(name string) bool {
 func (p *proxy) hostConn(ctx context.Context, conn net.Conn) error {
 	defer conn.Close()
 	bc := newBufConn(conn)
-	name, err := bc.serverName()
+	hello, err := bc.helloInfo()
 	if err != nil {
 		return err
 	}
-	if isRejectedDomain(name) {
+	if isRejectedDomain(hello.serverName) {
 		return errNameRejected
 	}
 
 	addr := conn.RemoteAddr().String()
-	remote, err := p.dialer.dial(ctx, name, addr)
+	remote, err := p.dialer.dial(ctx, hello, addr)
 	if err != nil {
 		return err
 	}
 	closer := &closerOnce{Closer: remote}
 	defer closer.Close()
 
-	return joinConn(ctx, remote, bc)
+	return netutil.JoinConn(ctx, remote, bc)
 }
 
 // IsClosedConnError checks if the error is a Closed connection error.

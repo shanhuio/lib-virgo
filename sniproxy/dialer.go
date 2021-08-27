@@ -23,16 +23,17 @@ import (
 )
 
 type dialer interface {
-	dial(ctx context.Context, domain, asAddr string) (net.Conn, error)
+	dial(ctx context.Context, hello *helloInfo, asAddr string) (net.Conn, error)
 }
 
 type tcpDialer struct {
 	raddrs map[string]*net.TCPAddr
 }
 
-func (d *tcpDialer) dial(
-	_ context.Context, domain, _ string,
-) (net.Conn, error) {
+func (d *tcpDialer) dial(_ context.Context, hello *helloInfo, _ string) (
+	net.Conn, error,
+) {
+	domain := hello.serverName
 	raddr, ok := d.raddrs[domain]
 	if !ok {
 		return nil, errcode.NotFoundf("no connection for domain %q", domain)

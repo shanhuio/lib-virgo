@@ -24,6 +24,12 @@ import (
 	"net"
 )
 
+type helloInfo struct {
+	serverName string
+	protoCount int
+	firstProto string
+}
+
 type bufConn struct {
 	net.Conn
 	br *bufio.Reader
@@ -40,37 +46,41 @@ func (c *bufConn) Read(buf []byte) (int, error) {
 	return c.br.Read(buf)
 }
 
-// serverName returns the SNI server name inside the TLS ClientHello,
+// helloInfo returns the SNI information extracted from the TLS ClientHello,
 // without consuming any bytes from br.
 // On any error, the empty string is returned.
-func (c *bufConn) serverName() (string, error) {
+func (c *bufConn) helloInfo() (*helloInfo, error) {
 	const headerLen = 5
 	hdr, err := c.br.Peek(headerLen)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	const handshake = 0x16
 	if hdr[0] != handshake {
-		return "", fmt.Errorf("not TLS: 0x%02x != 0x16", hdr[0]) // Not TLS.
+		return nil, fmt.Errorf("not TLS: 0x%02x != 0x16", hdr[0]) // Not TLS.
 	}
 	recLen := int(hdr[3])<<8 | int(hdr[4]) // ignoring version in hdr[1:3]
 
 	helloBytes, err := c.br.Peek(headerLen + recLen)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	var name string
+	info := new(helloInfo)
 	tls.Server(
 		&headerConn{r: bytes.NewReader(helloBytes)},
-		nameSinkTLSConfig(&name),
+		nameSinkTLSConfig(info),
 	).Handshake()
-	return name, nil
+	return info, nil
 }
 
-func nameSinkTLSConfig(name *string) *tls.Config {
+func nameSinkTLSConfig(info *helloInfo) *tls.Config {
 	getConfig := func(h *tls.ClientHelloInfo) (*tls.Config, error) {
-		*name = h.ServerName
+		info.serverName = h.ServerName
+		info.protoCount = len(h.SupportedProtos)
+		if info.protoCount > 0 {
+			info.firstProto = h.SupportedProtos[0]
+		}
 		return nil, nil
 	}
 	return &tls.Config{GetConfigForClient: getConfig}
