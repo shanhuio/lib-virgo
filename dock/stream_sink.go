@@ -17,9 +17,13 @@ package dock
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
+
+	"shanhu.io/misc/errcode"
 )
 
 type progressDetail struct {
@@ -28,12 +32,13 @@ type progressDetail struct {
 }
 
 type streamMessage struct {
-	From           string          `json:"from"`
-	ID             string          `json:"id"`
-	Stream         string          `json:"stream"`
-	ProgressDetail *progressDetail `json:"progressDetail"`
+	From           string          `json:"from,omitempty"`
+	ID             string          `json:"id,omitempty"`
+	Stream         string          `json:"stream,omitempty"`
+	ProgressDetail *progressDetail `json:"progressDetail,omitempty"`
 
-	Status string `json:"status"`
+	Status string `json:"status,omitempty"`
+	Error  string `json:"error,omitempty"`
 }
 
 type streamSink struct {
@@ -106,6 +111,7 @@ func (p *progressPrinter) Print(m *streamMessage) {
 
 func printStreamMessage(r io.ReadCloser, out io.Writer) error {
 	defer r.Close()
+	var streamErr error
 
 	p := &progressPrinter{out: out}
 	dec := json.NewDecoder(r)
@@ -114,9 +120,15 @@ func printStreamMessage(r io.ReadCloser, out io.Writer) error {
 		if err := dec.Decode(m); err != nil {
 			return err
 		}
+		if m.Error != "" {
+			if streamErr != nil {
+				log.Println(streamErr)
+			}
+			streamErr = errcode.Add(errcode.Internal, errors.New(m.Error))
+		}
 		p.Print(m)
 	}
-	return nil
+	return streamErr
 }
 
 func (s *streamSink) waitDone() error {
