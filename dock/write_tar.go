@@ -17,10 +17,11 @@ package dock
 
 import (
 	"archive/tar"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+
+	"shanhu.io/misc/errcode"
 )
 
 func createFile(r io.Reader, name string, mod os.FileMode) error {
@@ -71,8 +72,39 @@ func writeTarToDir(r io.Reader, destDir string) error {
 				return err
 			}
 		default:
-			return fmt.Errorf("type %s not supported", string(typ))
+			return errcode.Internalf("type %s not supported", string(typ))
 		}
+	}
+	return nil
+}
+
+func writeFirstFileAs(r io.Reader, file string) error {
+	tr := tar.NewReader(r)
+	written := false
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if written {
+			continue
+		}
+		if header.Typeflag != tar.TypeReg {
+			continue
+		}
+
+		mod := header.FileInfo().Mode()
+		if err := createFile(tr, file, mod); err != nil {
+			return err
+		}
+		written = true
+	}
+
+	if !written {
+		return errcode.NotFoundf("no file found")
 	}
 	return nil
 }

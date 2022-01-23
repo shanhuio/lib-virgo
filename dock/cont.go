@@ -98,6 +98,20 @@ func (c *Cont) CopyOut(src, destDir string) error {
 	return resp.Body.Close()
 }
 
+// CopyFile copies a single file into the destination.
+func (c *Cont) CopyFile(src, dest string) error {
+	resp, err := c.getTar(src)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if err := writeFirstFileAs(resp.Body, dest); err != nil {
+		return err
+	}
+	return resp.Body.Close()
+}
+
 // Start starts the container.
 func (c *Cont) Start() error { return c.c.poke(c.path("start"), nil) }
 
