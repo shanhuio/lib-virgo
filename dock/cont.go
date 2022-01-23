@@ -141,7 +141,6 @@ const (
 // Wait for container to finish running.
 func (c *Cont) Wait(cond string) (int, error) {
 	q := singleQuery("condition", cond)
-
 	var resp struct{ StatusCode int }
 	if err := c.c.call(c.path("wait"), q, nil, &resp); err != nil {
 		return 0, err
@@ -171,12 +170,10 @@ func (c *Cont) Exists() (bool, error) {
 
 func (c *Cont) rename(to string) error {
 	// after the renaming, the container will become not usable.
-	q := singleQuery("name", to)
-	return c.c.poke(c.path("rename"), q)
+	return c.c.poke(c.path("rename"), singleQuery("name", to))
 }
 
 // RenameCont renames an existing container.
 func RenameCont(client *Client, from, to string) error {
-	c := NewCont(client, from)
-	return c.rename(to)
+	return NewCont(client, from).rename(to)
 }
