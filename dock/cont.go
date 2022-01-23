@@ -98,8 +98,8 @@ func (c *Cont) CopyOut(src, destDir string) error {
 	return resp.Body.Close()
 }
 
-// CopyFile copies a single file into the destination.
-func (c *Cont) CopyFile(src, dest string) error {
+// CopyOutFile copies a single file into the destination.
+func (c *Cont) CopyOutFile(src, dest string) error {
 	resp, err := c.getTar(src)
 	if err != nil {
 		return err
