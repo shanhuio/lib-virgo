@@ -102,3 +102,7 @@ func (c *Client) put(p string, q url.Values, r io.Reader) error {
 func (c *Client) get(p string, q url.Values) (*http.Response, error) {
 	return c.client.Get(apiURLQuery(p, q))
 }
+
+func (c *Client) getInto(p string, q url.Values, w io.Writer) (int64, error) {
+	return c.client.GetInto(apiURLQuery(p, q), w)
+}

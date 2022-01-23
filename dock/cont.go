@@ -18,6 +18,7 @@ package dock
 import (
 	"io"
 	"net/http"
+	"net/url"
 
 	"shanhu.io/misc/errcode"
 	"shanhu.io/misc/httputil"
@@ -77,7 +78,6 @@ func (c *Cont) CopyOutTar(fromPath string, w io.Writer) error {
 		return err
 	}
 	defer resp.Body.Close()
-
 	if _, err := io.Copy(w, resp.Body); err != nil {
 		return err
 	}
@@ -91,7 +91,6 @@ func (c *Cont) CopyOut(src, destDir string) error {
 		return err
 	}
 	defer resp.Body.Close()
-
 	if err := writeTarToDir(resp.Body, destDir); err != nil {
 		return err
 	}
@@ -105,7 +104,6 @@ func (c *Cont) CopyOutFile(src, dest string) error {
 		return err
 	}
 	defer resp.Body.Close()
-
 	if err := writeFirstFileAs(resp.Body, dest); err != nil {
 		return err
 	}
@@ -180,6 +178,19 @@ func (c *Cont) Exists() (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+// FollowLogs follows the container's logs and forwards it into the writer.
+func (c *Cont) FollowLogs(out io.Writer) error {
+	q := make(url.Values)
+	q.Add("follow", "true")
+	q.Add("stdout", "true")
+	q.Add("stderr", "true")
+	sink := newLogSink(out, out)
+	if _, err := c.c.getInto(c.path("logs"), q, sink); err != nil {
+		return err
+	}
+	return sink.waitDone()
 }
 
 func (c *Cont) rename(to string) error {
