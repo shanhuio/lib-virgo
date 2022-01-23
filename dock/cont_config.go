@@ -70,6 +70,7 @@ type ContConfig struct {
 	AlwaysRestart bool // Use restart policy "always".
 	AutoRestart   bool // Use restart policy "unless-stopped".
 	Cmd           []string
+	WorkDir       string
 	Labels        map[string]string
 
 	JSONLogConfig *JSONLogConfig

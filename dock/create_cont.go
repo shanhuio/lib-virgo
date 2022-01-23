@@ -89,8 +89,10 @@ func CreateCont(c *Client, image string, config *ContConfig) (*Cont, error) {
 		HostConfig   *contHostConfig     `json:",omitempty"`
 		ExposedPorts map[string]struct{} `json:",omitempty"`
 		Labels       map[string]string   `json:",omitempty"`
+		WorkingDir   string              `json:",omitempty"`
 	}{
-		Image: image,
+		Image:      image,
+		WorkingDir: config.WorkDir,
 	}
 
 	q := make(url.Values)
