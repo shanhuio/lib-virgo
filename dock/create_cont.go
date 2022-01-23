@@ -91,13 +91,13 @@ func CreateCont(c *Client, image string, config *ContConfig) (*Cont, error) {
 		Labels       map[string]string   `json:",omitempty"`
 		WorkingDir   string              `json:",omitempty"`
 	}{
-		Image:      image,
-		WorkingDir: config.WorkDir,
+		Image: image,
 	}
 
 	q := make(url.Values)
 
 	if config != nil {
+		req.WorkingDir = config.WorkDir
 		req.Hostname = config.Hostname
 
 		hc := &contHostConfig{Privileged: config.Privileged}
