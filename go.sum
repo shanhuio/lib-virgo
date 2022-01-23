@@ -14,6 +14,8 @@ shanhu.io/aries v0.0.0-20220115003748-34f842e9eda0 h1:ju7+NUlZ0BlwoobuHDyeq8S8GL
 shanhu.io/aries v0.0.0-20220115003748-34f842e9eda0/go.mod h1:qri4QftW8+tRGYc/48Qpa1xqkg2Cy3KXirClnsJ6hjw=
 shanhu.io/aries v0.0.0-20220115064656-837169cee407 h1:0vQQmf4UPuuK49vTJoxxc/WCgDuHdDbJjHwVcekWKdo=
 shanhu.io/aries v0.0.0-20220115064656-837169cee407/go.mod h1:6H3rzX5q5dytMUBfUFAqJrSRZmXE5Og5h7Bsfno7X7s=
+shanhu.io/aries v0.0.0-20220123173645-a797f6b8507b h1:fGLeZdnTxJ8iXHDjgogDV+wkmemvzmUvZNmeADySBVg=
+shanhu.io/aries v0.0.0-20220123173645-a797f6b8507b/go.mod h1:1+nMlvDl1M7Abb1twNA3bUyCylm2ci4v5+oV1GssXnU=
 shanhu.io/misc v0.0.0-20220115003718-efc8d12040b2 h1:fNfdRcHVUtKUkHUQTs6Up5g5kJhJ9/0jf8d7AG3dTU8=
 shanhu.io/misc v0.0.0-20220115003718-efc8d12040b2/go.mod h1:MC5VU8N1Ex2DxTJxpdX3tYk2DFRxFHszWDJt/k4qYyI=
 shanhu.io/misc v0.0.0-20220123153250-f0f2dee335f9 h1:/QpaO2Rh5aFdBD8FocBpHM4gT/VNO8AWK6BZxY1ASB4=
