@@ -5,8 +5,8 @@ go 1.18
 require (
 	github.com/gorilla/websocket v1.5.0
 	gopkg.in/yaml.v2 v2.4.0
-	shanhu.io/aries v0.0.0-20220530000849-573c8862d028
-	shanhu.io/misc v0.0.0-20220530000842-756d5804d596
+	shanhu.io/aries v0.0.0-20220603031127-9c3b994166ae
+	shanhu.io/misc v0.0.0-20220603031120-2403304a6239
 )
 
 require (

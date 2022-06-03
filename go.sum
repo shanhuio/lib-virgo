@@ -10,9 +10,9 @@ gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.4.0 h1:D8xgwECY7CYvx+Y2n4sBz93Jn9JRvxdiyyo8CTfuKaY=
 gopkg.in/yaml.v2 v2.4.0/go.mod h1:RDklbk79AGWmwhnvt/jBztapEOGDOx6ZbXqjP6csGnQ=
-shanhu.io/aries v0.0.0-20220530000849-573c8862d028 h1:70LKpBCT8Dr6HTpmLKLeiSU9tIR/idb2qUWa4+UASXA=
-shanhu.io/aries v0.0.0-20220530000849-573c8862d028/go.mod h1:1JYBfdr3KxcTDnPEkl4SNuGyJnlufQ0boLTZ+H1TLUE=
-shanhu.io/misc v0.0.0-20220530000842-756d5804d596 h1:ZZhrjWG/uA+JUhOPFGqVpXGRJ84SggGpyiREPeorCnc=
-shanhu.io/misc v0.0.0-20220530000842-756d5804d596/go.mod h1:asADp+RHuT1FucQUKc807NKaDSs8qoF6rFdqebJj9EU=
+shanhu.io/aries v0.0.0-20220603031127-9c3b994166ae h1:h6GSslPmkl+Y5j9DA0Y8oYbtNlE8vjc8rRCGYT+grtM=
+shanhu.io/aries v0.0.0-20220603031127-9c3b994166ae/go.mod h1:pVcVN+7ZhQeeftfX5NyLG64IBBpu9VWq0gjSJroZtZA=
+shanhu.io/misc v0.0.0-20220603031120-2403304a6239 h1:TAMy9qUMSdyd2KYepHHvNfAzt8nbE55rqhCzWTyfju4=
+shanhu.io/misc v0.0.0-20220603031120-2403304a6239/go.mod h1:LnjOHkfQ4bwOva8RRNzaG3ZhmaV4BHtkxfzpIph9II0=
 shanhu.io/text v0.0.0-20220403174149-0195ecfdda87 h1:5B5QyUHPdmsKzfhgJjG7LZ3gdIL7NSBAMtL4QCXx07E=
 shanhu.io/text v0.0.0-20220403174149-0195ecfdda87/go.mod h1:CexHuZjVSZj85hsKVcxZq80AMSdJNPFlOD4lSDEEE5g=
